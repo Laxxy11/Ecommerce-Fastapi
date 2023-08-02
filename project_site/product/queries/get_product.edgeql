@@ -1,0 +1,1 @@
+select Product {title,description,price,categories,created_at};
