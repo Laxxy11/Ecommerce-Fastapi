@@ -3,7 +3,13 @@ from uuid import UUID
 import edgedb
 from fastapi import APIRouter, status
 from product.schemas import product_schema
-from product.views import create_product, delete_product, product_by_name, product_list
+from product.views import (
+    create_product,
+    db_product_update,
+    delete_product,
+    product_by_name,
+    product_list,
+)
 from utils.response import success_response
 
 router = APIRouter(tags=["Product"])
@@ -49,4 +55,12 @@ async def remove_product(product_id: UUID):
         status_code=200,
         data_info=data,
         msg="Successfully deleted",
+    )
+
+
+@router.put("/products/{product_id}", status_code=status.HTTP_200_OK)
+async def update_product(product_id: UUID, request: product_schema.Product):
+    data = await db_product_update(client, product_id, request)
+    return await success_response(
+        status_code=200, data_info=data, msg="successfully updated"
     )

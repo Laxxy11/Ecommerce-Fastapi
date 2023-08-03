@@ -10,6 +10,7 @@ from product.queries import (
     get_product_async_edgeql,
     get_product_by_id_async_edgeql,
     get_product_by_name_async_edgeql,
+    update_product_async_edgeql,
 )
 
 
@@ -108,5 +109,25 @@ async def delete_product(session, product_id):
         )
     db_product = await delete_product_async_edgeql.delete_product(
         session, id=product_id
+    )
+    return db_product
+
+
+async def db_product_update(session, product_id, request):
+    db_product = await get_product_by_id_async_edgeql.get_product_by_id(
+        session, product_id=product_id
+    )
+    if db_product is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No such Product exists",
+        )
+    db_product = await update_product_async_edgeql.update_product(
+        session,
+        product_id=product_id,
+        new_title=request.title,
+        description=request.description,
+        price=request.price,
+        categories=request.categories,
     )
     return db_product
