@@ -3,16 +3,19 @@
 
 
 from __future__ import annotations
+
 import dataclasses
 import datetime
-import edgedb
 import uuid
+
+import edgedb
 
 
 class NoPydanticValidation:
     @classmethod
     def __get_validators__(cls):
         from pydantic.dataclasses import dataclass as pydantic_dataclass
+
         pydantic_dataclass(cls)
         cls.__pydantic_model__.__get_validators__ = lambda: []
         return []
@@ -37,7 +40,7 @@ class UpdateProductResultCategoriesItem(NoPydanticValidation):
 async def update_product(
     executor: edgedb.AsyncIOExecutor,
     *,
-    current_title: str,
+    product_id: uuid.UUID,
     new_title: str,
     description: str,
     price: float,
@@ -46,7 +49,7 @@ async def update_product(
     return await executor.query_single(
         """\
         select (
-            update Product filter.title=<str>$current_title
+            update Product filter.id=<uuid>$product_id
             set{
                 title :=<str>$new_title,
                 description := <str>$description,
@@ -61,7 +64,7 @@ async def update_product(
             title,description,price,categories,created_at,updated_at
         }\
         """,
-        current_title=current_title,
+        product_id=product_id,
         new_title=new_title,
         description=description,
         price=price,

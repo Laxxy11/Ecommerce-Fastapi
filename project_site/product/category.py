@@ -1,6 +1,13 @@
+from uuid import UUID
+
 import edgedb
 from fastapi import APIRouter, status
-from product.views import category_by_name, category_list, create_category
+from product.views import (
+    category_by_name,
+    category_list,
+    create_category,
+    delete_category,
+)
 from utils.response import success_response
 
 router = APIRouter(tags=["Category"])
@@ -36,4 +43,14 @@ async def create_new_category(category: str):
         status_code=201,
         data_info=data,
         msg="Successfully Created",
+    )
+
+
+@router.delete("/categories/{category_id}", status_code=status.HTTP_200_OK)
+async def remove_category(category_id: UUID):
+    data = await delete_category(client, category_id)
+    return await success_response(
+        status_code=200,
+        data_info=data,
+        msg="Successfully deleted",
     )

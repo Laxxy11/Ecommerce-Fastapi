@@ -1,0 +1,1 @@
+select Category {name} filter Category.id=<uuid>$category_id

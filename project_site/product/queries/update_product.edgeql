@@ -1,5 +1,5 @@
 select (
-    update Product filter.title=<str>$current_title
+    update Product filter.id=<uuid>$product_id
     set{
         title :=<str>$new_title,
         description := <str>$description,

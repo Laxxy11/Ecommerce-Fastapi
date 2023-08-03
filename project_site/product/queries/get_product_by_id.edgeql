@@ -1,0 +1,1 @@
+select Product {title,description,price,categories,created_at,updated_at} filter (Product.id=<uuid>$product_id);

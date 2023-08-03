@@ -34,6 +34,7 @@ repos:
         # args: # arguments to configure black
         #   - --max-line-length=88
         args: ["--config=.flake8"]
+
         # args: ['--ignore=F401,W503']
   - repo: https://github.com/codespell-project/codespell
     rev: v2.1.0
@@ -61,11 +62,11 @@ repos:
       - id: black
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: 'v0.0.269'
+    rev: "v0.0.269"
     hooks:
-    - id: ruff
-      args:
-        - --line-length=118
+      - id: ruff
+        args:
+          - --line-length=118
   - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
     rev: v1.3.1
     hooks:

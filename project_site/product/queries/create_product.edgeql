@@ -5,5 +5,5 @@ select(insert Product{
     categories:=(select Category filter .name in array_unpack(<array<str>>$categories))
 })
 {
-    title,description,price,categories,created_at
-};
+    title,description,price,categories:{id, name},created_at
+};    

@@ -13,4 +13,4 @@ class Product(BaseModel):
     title: str
     description: str
     price: float
-    categories: List[Category]
+    categories: List[str]
