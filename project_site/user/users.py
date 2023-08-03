@@ -1,55 +1,41 @@
 import edgedb
-from fastapi import APIRouter, HTTPException, status
-
-from .queries import (
-    create_user_async_edgeql,
-    get_user_async_edgeql,
-    get_user_by_name_async_edgeql,
-)
-from .schemas import user_schema
+from fastapi import APIRouter, status
+from user.schemas import user_schema
+from user.views import db_create_users, db_get_users, db_get_users_by_name
+from utils.response import success_response
 
 router = APIRouter(tags=["User"])
 client = edgedb.create_async_client()
 
 
 @router.get("/users/", status_code=status.HTTP_200_OK)
-async def get_users():
+async def get_users(dep):
     """Api endpoint for reading all the users"""
-    users = await get_user_async_edgeql.get_user(client)
-    print(users)
-    return users
+    data = await db_get_users(client)
+    return await success_response(
+        status_code=200,
+        msg="Successfully",
+        data_info=data,
+    )
 
 
 @router.get("/users/{name}", status_code=status.HTTP_200_OK)
 async def get_user_by_name(name: str):
     """Api Endpoint for reading user by name"""
-    db_user = await get_user_by_name_async_edgeql.get_user_by_name(
-        client, username=name
+    data = await db_get_users_by_name(client, name)
+    return await success_response(
+        status_code=200,
+        msg="Successfully ",
+        data_info=data,
     )
-    if not db_user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error": f"Username '{name}' does not exist."},
-        )
-    return db_user
 
 
 @router.post("/users/", status_code=status.HTTP_201_CREATED)
 async def create_user(user: user_schema.UserCreate):
     """Api Endpoint for creating new user"""
-    db_user = await get_user_by_name_async_edgeql.get_user_by_name(
-        client,
-        username=user.username,
+    data = await db_create_users(client, user)
+    return await success_response(
+        status_code=200,
+        msg="Successfully",
+        data_info=data,
     )
-    if db_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User already exist",
-        )
-    db_user = await create_user_async_edgeql.create_user(
-        client,
-        username=user.username,
-        email=user.email,
-        password=user.password,
-    )
-    return db_user

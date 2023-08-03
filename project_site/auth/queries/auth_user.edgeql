@@ -1,0 +1,1 @@
+select User {username,password,email}filter(User.username=<str>$username)

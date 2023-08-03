@@ -51,8 +51,7 @@ async def create_product(
             title:=<str>$title,
             description:=<str>$description,
             price:=<float64>$price,
-            categories:=(select Category filter .name in array_unpack(<array<str>>$categories),)
-            
+            categories:=(select Category filter .name in array_unpack(<array<str>>$categories))
         })
         {
             title,description,price,categories:{id, name},created_at

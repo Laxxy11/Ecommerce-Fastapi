@@ -44,8 +44,8 @@ async def get_product_by_id(
 ) -> GetProductByIdResult | None:
     return await executor.query_single(
         """\
-        select 
-        Product {title,description,price,categories,created_at,updated_at} 
+        select Product
+        {title,description,price,categories,created_at,updated_at} 
         filter (Product.id=<uuid>$product_id);\
         """,
         product_id=product_id,
