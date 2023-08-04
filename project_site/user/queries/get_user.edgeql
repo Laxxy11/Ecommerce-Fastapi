@@ -1,1 +1,1 @@
-select  User {username,email} 
+select  User {username,email,user_role} 

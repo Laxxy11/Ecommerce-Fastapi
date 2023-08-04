@@ -27,6 +27,7 @@ class CreateProductResult(NoPydanticValidation):
     title: str
     description: str | None
     price: float
+    user: CreateProductResultUser
     categories: list[CreateProductResultCategoriesItem]
     created_at: datetime.datetime | None
 
@@ -37,6 +38,11 @@ class CreateProductResultCategoriesItem(NoPydanticValidation):
     name: str
 
 
+@dataclasses.dataclass
+class CreateProductResultUser(NoPydanticValidation):
+    id: uuid.UUID
+
+
 async def create_product(
     executor: edgedb.AsyncIOExecutor,
     *,
@@ -44,21 +50,25 @@ async def create_product(
     description: str,
     price: float,
     categories: list[str],
+    user_id: uuid.UUID,
 ) -> CreateProductResult:
     return await executor.query_single(
         """\
-        select(insert Product{
+        select(
+            insert Product{
             title:=<str>$title,
             description:=<str>$description,
             price:=<float64>$price,
-            categories:=(select Category filter .name in array_unpack(<array<str>>$categories))
+            categories:=(select Category filter .name in array_unpack(<array<str>>$categories)),
+            user:=(select User filter .id =<uuid>$user_id)
         })
         {
-            title,description,price,categories:{id, name},created_at
+            title,description,price,user,categories:{id, name},created_at
         };\
         """,
         title=title,
         description=description,
         price=price,
         categories=categories,
+        user_id=user_id,
     )

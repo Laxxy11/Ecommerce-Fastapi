@@ -41,5 +41,6 @@ async def db_create_users(client, user):
         username=user.username,
         email=user.email,
         password=hash_password,
+        user_role=user.user_role,
     )
     return db_user

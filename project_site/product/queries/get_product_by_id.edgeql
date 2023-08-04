@@ -1,1 +1,1 @@
-select Product {title,description,price,categories,created_at,updated_at} filter (Product.id=<uuid>$product_id);
+select Product {title,description,price,user,categories,created_at,updated_at} filter (Product.id=<uuid>$product_id);

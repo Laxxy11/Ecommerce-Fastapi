@@ -1,15 +1,20 @@
 import edgedb
 from fastapi import APIRouter, status
 from user.schemas import user_schema
-from user.views import db_create_users, db_get_users, db_get_users_by_name
 from utils.response import success_response
+
+from project_site.user.user_views import (
+    db_create_users,
+    db_get_users,
+    db_get_users_by_name,
+)
 
 router = APIRouter(tags=["User"])
 client = edgedb.create_async_client()
 
 
 @router.get("/users/", status_code=status.HTTP_200_OK)
-async def get_users(dep):
+async def get_users():
     """Api endpoint for reading all the users"""
     data = await db_get_users(client)
     return await success_response(

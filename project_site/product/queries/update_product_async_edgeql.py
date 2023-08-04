@@ -27,6 +27,7 @@ class UpdateProductResult(NoPydanticValidation):
     title: str
     description: str | None
     price: float
+    user: UpdateProductResultUser
     categories: list[UpdateProductResultCategoriesItem]
     created_at: datetime.datetime | None
     updated_at: datetime.datetime | None
@@ -37,10 +38,16 @@ class UpdateProductResultCategoriesItem(NoPydanticValidation):
     id: uuid.UUID
 
 
+@dataclasses.dataclass
+class UpdateProductResultUser(NoPydanticValidation):
+    id: uuid.UUID
+
+
 async def update_product(
     executor: edgedb.AsyncIOExecutor,
     *,
     product_id: uuid.UUID,
+    user_id: uuid.UUID,
     new_title: str,
     description: str,
     price: float,
@@ -49,7 +56,7 @@ async def update_product(
     return await executor.query_single(
         """\
         select (
-            update Product filter.id=<uuid>$product_id
+            update Product filter.id=<uuid>$product_id and  .user.id=<uuid>$user_id
             set{
                 title :=<str>$new_title,
                 description := <str>$description,
@@ -57,14 +64,16 @@ async def update_product(
                 categories := (
                     select Category
                     filter .name in array_unpack(<array<str>>$categories)
-                )
+                ),
+                user:=(select User filter .id =<uuid>$user_id),
             }       
         )
         {
-            title,description,price,categories,created_at,updated_at
+            title,description,price,user,categories,created_at,updated_at
         }\
         """,
         product_id=product_id,
+        user_id=user_id,
         new_title=new_title,
         description=description,
         price=price,

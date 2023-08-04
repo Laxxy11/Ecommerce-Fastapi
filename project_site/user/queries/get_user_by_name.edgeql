@@ -1,1 +1,1 @@
-select User {username,email}filter(User.username=<str>$username)
+select User {username,email,user_role}filter(User.username=<str>$username)

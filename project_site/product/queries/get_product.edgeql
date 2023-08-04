@@ -1,1 +1,1 @@
-select Product {title,description,price,categories,created_at};
+select Product {title,description,price,user,categories,created_at} filter .user.id=<uuid>$user_id;

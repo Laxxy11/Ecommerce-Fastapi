@@ -1,4 +1,5 @@
 module default {
+
     type User{
         required username :str{
             constraint exclusive;
@@ -7,6 +8,10 @@ module default {
             constraint exclusive;
         }
         required password : str;
+        required user_role :str{
+            constraint exclusive;
+            
+        }
     }
 
 
@@ -31,6 +36,14 @@ module default {
             readonly:=True;
             default:=datetime_current();
         }
+        required link user:User
+    }
+
+    type Cart{
+        required quantity :int64;
+        required link user :User;
+        multi link products :Product;
+
     }
 
 }

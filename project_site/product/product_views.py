@@ -1,5 +1,6 @@
 from fastapi import HTTPException, status
 from product.queries import (
+    check_is_admin_async_edgeql,
     create_category_async_edgeql,
     create_product_async_edgeql,
     delete_category_async_edgeql,
@@ -62,8 +63,8 @@ async def delete_category(session, category_id):
 
 
 # for product--------------------------------------
-async def product_list(session):
-    db_products = await get_product_async_edgeql.get_product(session)
+async def product_list(session, user):
+    db_products = await get_product_async_edgeql.get_product(session, user_id=user)
     return db_products
 
 
@@ -79,7 +80,15 @@ async def product_by_name(session, product):
     return db_product
 
 
-async def create_product(session, product):
+async def create_product(session, product, user):
+    check_user_role = await check_is_admin_async_edgeql.check_is_admin(
+        session, user_id=user
+    )
+    if not check_user_role:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"error": " User does not have access"},
+        )
     db_product = await get_product_by_name_async_edgeql.get_product_by_name(
         session, title=product.title
     )
@@ -94,11 +103,20 @@ async def create_product(session, product):
         description=product.description,
         price=product.price,
         categories=product.categories,
+        user_id=user,
     )
     return db_product
 
 
-async def delete_product(session, product_id):
+async def delete_product(session, product_id, user_id):
+    check_user_role = await check_is_admin_async_edgeql.check_is_admin(
+        session, user_id=user_id
+    )
+    if not check_user_role:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"error": " User does not have access"},
+        )
     db_product = await get_product_by_id_async_edgeql.get_product_by_id(
         session, product_id=product_id
     )
@@ -113,7 +131,16 @@ async def delete_product(session, product_id):
     return db_product
 
 
-async def db_product_update(session, product_id, request):
+async def db_product_update(session, product_id, request, user_id):
+    check_user_role = await check_is_admin_async_edgeql.check_is_admin(
+        session, user_id=user_id
+    )
+    if not check_user_role:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"error": " User does not have access"},
+        )
+
     db_product = await get_product_by_id_async_edgeql.get_product_by_id(
         session, product_id=product_id
     )
@@ -129,5 +156,6 @@ async def db_product_update(session, product_id, request):
         description=request.description,
         price=request.price,
         categories=request.categories,
+        user_id=user_id,
     )
     return db_product

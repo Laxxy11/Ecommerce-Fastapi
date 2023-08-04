@@ -3,16 +3,19 @@
 
 
 from __future__ import annotations
+
 import dataclasses
 import datetime
-import edgedb
 import uuid
+
+import edgedb
 
 
 class NoPydanticValidation:
     @classmethod
     def __get_validators__(cls):
         from pydantic.dataclasses import dataclass as pydantic_dataclass
+
         pydantic_dataclass(cls)
         cls.__pydantic_model__.__get_validators__ = lambda: []
         return []
@@ -24,6 +27,7 @@ class GetProductResult(NoPydanticValidation):
     title: str
     description: str | None
     price: float
+    user: GetProductResultUser
     categories: list[GetProductResultCategoriesItem]
     created_at: datetime.datetime | None
 
@@ -33,11 +37,19 @@ class GetProductResultCategoriesItem(NoPydanticValidation):
     id: uuid.UUID
 
 
+@dataclasses.dataclass
+class GetProductResultUser(NoPydanticValidation):
+    id: uuid.UUID
+
+
 async def get_product(
     executor: edgedb.AsyncIOExecutor,
+    *,
+    user_id: uuid.UUID,
 ) -> list[GetProductResult]:
     return await executor.query(
         """\
-        select Product {title,description,price,categories,created_at};\
+        select Product {title,description,price,user,categories,created_at} filter .user.id=<uuid>$user_id;\
         """,
+        user_id=user_id,
     )

@@ -3,15 +3,18 @@
 
 
 from __future__ import annotations
+
 import dataclasses
-import edgedb
 import uuid
+
+import edgedb
 
 
 class NoPydanticValidation:
     @classmethod
     def __get_validators__(cls):
         from pydantic.dataclasses import dataclass as pydantic_dataclass
+
         pydantic_dataclass(cls)
         cls.__pydantic_model__.__get_validators__ = lambda: []
         return []
@@ -22,6 +25,7 @@ class CreateUserResult(NoPydanticValidation):
     id: uuid.UUID
     username: str
     email: str
+    user_role: str
 
 
 async def create_user(
@@ -30,6 +34,7 @@ async def create_user(
     username: str,
     email: str,
     password: str,
+    user_role: str,
 ) -> CreateUserResult:
     return await executor.query_single(
         """\
@@ -37,13 +42,15 @@ async def create_user(
             insert User{
                 username:=<str>$username,
                 email:=<str>$email,
-                password:=<str>$password
+                password:=<str>$password,
+                user_role:=<str>$user_role,
             }
         ){
-            username,email
+            username,email,user_role
         };\
         """,
         username=username,
         email=email,
         password=password,
+        user_role=user_role,
     )

@@ -27,6 +27,7 @@ class GetProductByNameResult(NoPydanticValidation):
     title: str
     description: str | None
     price: float
+    user: GetProductByNameResultUser
     categories: list[GetProductByNameResultCategoriesItem]
     created_at: datetime.datetime | None
     updated_at: datetime.datetime | None
@@ -38,6 +39,11 @@ class GetProductByNameResultCategoriesItem(NoPydanticValidation):
     name: str
 
 
+@dataclasses.dataclass
+class GetProductByNameResultUser(NoPydanticValidation):
+    id: uuid.UUID
+
+
 async def get_product_by_name(
     executor: edgedb.AsyncIOExecutor,
     *,
@@ -45,9 +51,12 @@ async def get_product_by_name(
 ) -> GetProductByNameResult | None:
     return await executor.query_single(
         """\
-        select Product
-        {title,description,price,categories:{name},
-        created_at,updated_at} 
+        select Product 
+        {title,
+        description,
+        price,
+        user,
+        categories:{name},created_at,updated_at} 
         filter (Product.title=<str>$title);\
         """,
         title=title,
