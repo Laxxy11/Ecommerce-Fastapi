@@ -1,0 +1,1 @@
+select Cart {user:{username},products:{title},quantity} filter .user.id=<uuid>$user_id;

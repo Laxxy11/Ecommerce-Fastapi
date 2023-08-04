@@ -1,0 +1,1 @@
+select Cart {user,products,quantity} filter (Cart.id=<uuid>$cart_id) and (User.id=<uuid>$user_id);

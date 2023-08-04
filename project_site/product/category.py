@@ -2,13 +2,14 @@ from uuid import UUID
 
 import edgedb
 from fastapi import APIRouter, status
-from product.views import (
+from utils.response import success_response
+
+from project_site.product.product_views import (
     category_by_name,
     category_list,
     create_category,
     delete_category,
 )
-from utils.response import success_response
 
 router = APIRouter(tags=["Category"])
 client = edgedb.create_async_client()
