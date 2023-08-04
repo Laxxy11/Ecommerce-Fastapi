@@ -8,10 +8,7 @@ module default {
             constraint exclusive;
         }
         required password : str;
-        required user_role :str{
-            constraint exclusive;
-            
-        }
+        required user_role :str;
     }
 
 

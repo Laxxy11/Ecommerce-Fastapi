@@ -51,8 +51,13 @@ async def get_product_by_name(
 ) -> GetProductByNameResult | None:
     return await executor.query_single(
         """\
-        select Product 
-        {title,description,price,user,categories:{name},created_at,updated_at} 
+        select 
+        Product
+        {title,
+        description,
+        price,user,
+        categories:{name},
+        created_at,updated_at} 
         filter (Product.title=<str>$title);\
         """,
         title=title,

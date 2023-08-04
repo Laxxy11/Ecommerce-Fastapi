@@ -50,9 +50,9 @@ async def get_product_by_id(
 ) -> GetProductByIdResult | None:
     return await executor.query_single(
         """\
-        select Product 
-        {title,
-        description,
+        select
+        Product 
+        {title,description,
         price,user,
         categories,
         created_at,updated_at} 

@@ -63,6 +63,11 @@ async def delete_category(session, category_id):
 
 
 # for product--------------------------------------
+async def product_list_for_all(session):
+    db_products = await get_product_async_edgeql.get_product(session)
+    return db_products
+
+
 async def product_list(session, user):
     db_products = await get_product_async_edgeql.get_product(session, user_id=user)
     return db_products

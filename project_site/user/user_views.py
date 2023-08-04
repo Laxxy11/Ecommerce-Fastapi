@@ -1,5 +1,6 @@
 from auth.utils.hashing import get_password_hash
 from fastapi import HTTPException, status
+from product.queries import check_is_admin_async_edgeql
 
 from .queries import (
     create_user_async_edgeql,
@@ -8,7 +9,16 @@ from .queries import (
 )
 
 
-async def db_get_users(client):
+async def db_get_users(client, user_id):
+    check_user_role = await check_is_admin_async_edgeql.check_is_admin(
+        client, user_id=user_id
+    )
+    if not check_user_role:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"error": " User does not have access"},
+        )
+
     users = await get_user_async_edgeql.get_user(client)
     return users
 
@@ -25,7 +35,16 @@ async def db_get_users_by_name(client, name):
     return db_user
 
 
-async def db_create_users(client, user):
+async def db_create_users(client, user, admin_id):
+    check_user_role = await check_is_admin_async_edgeql.check_is_admin(
+        client, user_id=admin_id
+    )
+    if not check_user_role:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"error": " User does not have access"},
+        )
+
     db_user = await get_user_by_name_async_edgeql.get_user_by_name(
         client,
         username=user.username,
