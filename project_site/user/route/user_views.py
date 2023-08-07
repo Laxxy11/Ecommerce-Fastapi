@@ -1,8 +1,7 @@
 from auth.utils.hashing import get_password_hash
 from fastapi import HTTPException, status
 from product.queries import check_is_admin_async_edgeql
-
-from .queries import (
+from user.queries import (
     create_user_async_edgeql,
     get_user_async_edgeql,
     get_user_by_name_async_edgeql,

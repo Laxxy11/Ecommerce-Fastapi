@@ -1,8 +1,8 @@
 from uuid import UUID
 
 import edgedb
+from carts.route.views import cart_list, create_cart, delete_cart
 from carts.schemas import Cart
-from carts.views import cart_list, create_cart, delete_cart
 from fastapi import APIRouter, Depends, status
 from utils.response import success_response
 
@@ -23,7 +23,7 @@ async def get_cart(user=Depends(get_current_user)):
     )
 
 
-@router.post("/carts/", status_code=status.HTTP_201_CREATED)
+@router.post("/cart/create/", status_code=status.HTTP_201_CREATED)
 async def create_new_cart(cart: Cart.CartCreate, user=Depends(get_current_user)):
     data = await create_cart(client, cart, user_id=user.id)
     return await success_response(
@@ -33,7 +33,7 @@ async def create_new_cart(cart: Cart.CartCreate, user=Depends(get_current_user))
     )
 
 
-@router.delete("/carts/{cart_id}", status_code=status.HTTP_200_OK)
+@router.delete("/cart/delete/{cart_id}", status_code=status.HTTP_200_OK)
 async def remove_product(cart_id: UUID, user=Depends(get_current_user)):
     data = await delete_cart(client, cart_id, user_id=user.id)
     return await success_response(

@@ -1,12 +1,11 @@
 from typing import Annotated
 
 import edgedb
+from auth.schemas.User import Setting, TokenData
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-
-from project_site.auth.schemas.User import Setting, TokenData
-from project_site.user.user_views import db_get_users_by_name
+from user.route.user_views import db_get_users_by_name
 
 setting = Setting()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")

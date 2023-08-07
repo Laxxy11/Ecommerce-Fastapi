@@ -1,14 +1,9 @@
 import edgedb
+from auth.Dependency import get_current_user
 from fastapi import APIRouter, Depends, status
+from user.route.user_views import db_create_users, db_get_users, db_get_users_by_name
 from user.schemas import user_schema
 from utils.response import success_response
-
-from project_site.auth.Dependency import get_current_user
-from project_site.user.user_views import (
-    db_create_users,
-    db_get_users,
-    db_get_users_by_name,
-)
 
 router = APIRouter(tags=["User"])
 client = edgedb.create_async_client()
@@ -25,7 +20,7 @@ async def get_users(user=Depends(get_current_user)):
     )
 
 
-@router.get("/users/{name}", status_code=status.HTTP_200_OK)
+@router.get("/user/get/{user_name}", status_code=status.HTTP_200_OK)
 async def get_user_by_name(name: str):
     """Api Endpoint for reading user by name"""
     data = await db_get_users_by_name(client, name)
@@ -36,7 +31,7 @@ async def get_user_by_name(name: str):
     )
 
 
-@router.post("/users/", status_code=status.HTTP_201_CREATED)
+@router.post("/user/create/", status_code=status.HTTP_201_CREATED)
 async def create_user(
     user: user_schema.UserCreate, current_user=Depends(get_current_user)
 ):

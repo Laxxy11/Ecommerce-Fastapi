@@ -1,8 +1,9 @@
 from auth.route import authentication
-from carts import carts
 from fastapi import FastAPI
-from product import category, products
-from user import users
+
+from project_site.carts.route import carts
+from project_site.product.route import category, products
+from project_site.user.route import users
 
 app = FastAPI()
 app.include_router(authentication.router)
